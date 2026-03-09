@@ -35,7 +35,7 @@ loadMasterProduk();
 function loadMasterProduk() {
   status.innerText = "📦 Memuat data produk...";
 
-  fetch("https://raw.githubusercontent.com/USERNAME/SO/main/master.json")
+  fetch("https://raw.githubusercontent.com/awilistrators/MasterSO/main/master_produk.json")
     .then(r => r.json())
     .then(data => {
       masterProduk = data;

@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxQgGesidNRxkwHEAri3Aoq6k4cx9uUj9F7MjLhARBMBTK251jKg18fZSFC88iQCVc6/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzPpQXw977bAya0EVSMrRA8KHKxJqyuDFt_kGks0fPhLMFb9bReXZB-lQUoj7zVbWSn/exec";
 
 /* ============================= */
 /* STATE GLOBAL                  */
@@ -152,13 +152,16 @@ function simpan() {
 
   setTimeout(() => (status.innerText = ""), 500);
 
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(payload));
+
   fetch(API_URL, {
-  method: "POST",
-  body: JSON.stringify(payload)
-})
-.then(r => r.json())
-.then(res => console.log(res))
-.catch(err => console.error("Gagal simpan opname", err));
+    method: "POST",
+    body: formData
+  })
+  .then(r => r.json())
+  .then(res => console.log("Response:", res))
+  .catch(err => console.error("Gagal simpan opname", err));
 }
 
 /* ============================= */

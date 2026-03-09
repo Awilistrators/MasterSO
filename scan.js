@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyBo6zgFV0ULvGk--Ornhf_fhITK8KUCUSsD_91oNM5kz4Bmc2b_ZnKlNtCx67tuV-A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz4B02AoXwFj6QtxoJCyvElO69aO2fsRDQZ2328PUBM_-zSLvxQraG3VBBAdVI1Hjso/exec";
 
 /* ============================= */
 /* STATE GLOBAL                  */

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Scan Produk</title>
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#2f80ed">
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body>
+  <div class="app">
+
+    <div id="info"></div>
+
+    <button onclick="bukaKamera()" class="secondary">📷 Scan dengan Kamera</button>
+    <div id="kamera" style="display:none; margin-top:12px;"></div>
+
+    <input id="barcode" placeholder="Scan Barcode / Kode Item" autofocus>
+
+    <div id="nama"></div>
+    <div id="qoh"></div>
+    <div id="status"></div>
+
+    <input id="qty" type="number" placeholder="Qty">
+
+    <button onclick="simpan()">Simpan</button>
+    <button onclick="ganti()" class="secondary">Ganti Petugas</button>
+  </div>
+
+  <!-- POPUP -->
+  <div id="popup" class="popup hidden">
+    <div class="popup-box">
+      <p id="popup-text"></p>
+      <button onclick="tutupPopup()">OK</button>
+    </div>
+  </div>
+
+  <script src="scan.js"></script>
+</body>
+</html>

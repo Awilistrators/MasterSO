@@ -35,8 +35,10 @@ loadMasterProduk();
 function loadMasterProduk() {
   status.innerText = "📦 Memuat data produk...";
 
-  fetch("https://awilistrators.github.io/MasterSO/master_produk.json")
-    
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "getAllProduk" })
+  })
     .then(r => r.json())
     .then(data => {
       masterProduk = data;

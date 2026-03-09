@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Mulai Stock Opname</title>
+
+  <!-- WAJIB: supaya tampilan HP tidak kecil -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <!-- Opsional: warna status bar HP -->
+  <meta name="theme-color" content="#2f80ed">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- Judul di tengah -->
+    <h2 class="title">Stock Opname</h2>
+
+    <input id="petugas" placeholder="Nama Petugas" autofocus>
+
+    <!-- Tombol tunggal -->
+    <button onclick="mulai()">Mulai SO</button>
+
+  </div>
+
+  <!-- POPUP CUSTOM -->
+<div id="popup" class="popup hidden">
+  <div class="popup-box">
+    <p id="popup-text">Isi nama petugas dulu</p>
+    <button onclick="tutupPopup()">OK</button>
+  </div>
+</div>
+
+  <script>
+  function mulai(){
+    const p = document.getElementById("petugas").value.trim();
+    if(!p){
+      tampilkanPopup("Isi nama petugas dulu");
+      return;
+    }
+
+    localStorage.setItem("petugas", p);
+    location.href = "scan.html";
+  }
+
+  function tampilkanPopup(teks){
+    document.getElementById("popup-text").innerText = teks;
+    document.getElementById("popup").classList.remove("hidden");
+  }
+
+  function tutupPopup(){
+    document.getElementById("popup").classList.add("hidden");
+  }
+</script>
+
+
+</body>
+
+</html>

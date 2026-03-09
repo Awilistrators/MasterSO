@@ -162,6 +162,7 @@ function simpan() {
 .then(r => r.json())
 .then(res => console.log(res))
 .catch(err => console.error("Gagal simpan opname", err));
+}
 
 /* ============================= */
 /* GANTI PETUGAS                 */

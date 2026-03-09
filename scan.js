@@ -153,10 +153,15 @@ function simpan() {
   setTimeout(() => (status.innerText = ""), 500);
 
   fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  }).catch(() => console.error("Gagal simpan opname"));
-}
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+})
+.then(r => r.json())
+.then(res => console.log(res))
+.catch(err => console.error("Gagal simpan opname", err));
 
 /* ============================= */
 /* GANTI PETUGAS                 */

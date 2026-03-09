@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbziQka2LsOFFzReiQDYODSWs1D4gFNC85pnZHKeHd7boUc1gHsZu7mY5YnDHH7a1Pw-/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxZgXeawx5f1TnQK0EAs6Dqy2ffRLA54wGN_3PhF8Xz2Y3eldKKi9BadLGXXjPnXLM4/exec";
 
 /* ============================= */
 /* STATE GLOBAL                  */
@@ -33,63 +33,81 @@ info.innerText = "Petugas: " + petugas;
 loadMasterProduk();
 
 function loadMasterProduk() {
+
+  const cache = localStorage.getItem("master_produk");
+
+  if (cache) {
+    masterProduk = JSON.parse(cache);
+    masterReady = true;
+    status.innerText = "⚡ Data produk dari cache";
+    setTimeout(()=>status.innerText="",800);
+    return;
+  }
+
   status.innerText = "📦 Memuat data produk...";
 
   fetch("https://raw.githubusercontent.com/awilistrators/MasterSO/main/master_produk.json")
     .then(r => r.json())
     .then(data => {
+
       masterProduk = data;
       masterReady = true;
+
+      localStorage.setItem("master_produk", JSON.stringify(data));
+
       status.innerText = "✅ Data produk siap";
-      setTimeout(() => status.innerText = "", 1000);
+      setTimeout(()=>status.innerText="",1000);
+
     })
-    .catch(() => {
+    .catch(err => {
+
+      console.error(err);
       status.innerText = "❌ Gagal memuat master produk";
+
     });
 }
 
 /* ============================= */
 /* EVENT SCAN BARCODE            */
 /* ============================= */
+
 barcode.addEventListener("keydown", e => {
 
-  // ENTER (scanner mode enter)
   if (e.key === "Enter") {
     e.preventDefault();
     cariProduk();
     return;
   }
 
-  // TAB (scanner mode tab)
   if (e.key === "Tab") {
-  // biarkan blur / input yang memicu cariProduk
-  setTimeout(() => {
-    qty.focus();
-    qty.select();
-  }, 0);
-}
-});
+    setTimeout(()=>{
+      qty.focus();
+      qty.select();
+    },0);
+  }
 
+});
 
 barcode.addEventListener("input", () => {
   clearTimeout(scanTimer);
-  scanTimer = setTimeout(cariProduk, 300);
+  scanTimer = setTimeout(cariProduk,300);
 });
 
 barcode.addEventListener("blur", () => {
-  setTimeout(cariProduk, 0);
+  setTimeout(cariProduk,0);
 });
 
 /* ============================= */
 /* CARI PRODUK                   */
 /* ============================= */
+
 function cariProduk() {
+
   const code = barcode.value.trim();
   if (!code) return;
 
   const now = Date.now();
 
-  // ⛔ CEGAH PROSES DOBEL BARCODE YANG SAMA
   if (code === lastScanCode && now - scanLockTime < 400) {
     return;
   }
@@ -105,25 +123,32 @@ function cariProduk() {
   const produk = masterProduk[code];
 
   if (produk) {
+
     nama.innerText = produk.nama;
     qohEl.innerText = "Stok sistem : " + produk.qoh;
     status.innerText = "✔ Produk ditemukan";
 
-    bunyiBeep();   // 🔊 BEEP 1x SAJA (FINAL)
+    bunyiBeep();
+
     qty.focus();
     qty.select();
-  } else {
-  nama.innerText = "";
-  qohEl.innerText = "";
-  status.innerText = "⚠️ Produk tidak ditemukan";
-}
-}
 
+  } else {
+
+    nama.innerText = "";
+    qohEl.innerText = "";
+    status.innerText = "⚠️ Produk tidak ditemukan";
+
+  }
+
+}
 
 /* ============================= */
 /* SIMPAN OPNAME                 */
 /* ============================= */
+
 function simpan() {
+
   if (!barcode.value.trim()) {
     tampilkanPopup("Scan / isi kode item dulu");
     return;
@@ -135,11 +160,13 @@ function simpan() {
   }
 
   const payload = {
+
     action: "simpanOpname",
     kode_input: barcode.value,
     nama: nama.innerText,
     qty: qty.value,
     petugas: petugas
+
   };
 
   // Optimistic UI
@@ -147,35 +174,53 @@ function simpan() {
   qty.value = "";
   nama.innerText = "";
   qohEl.innerText = "";
-  status.innerText = "💾 Tersimpan";
+  status.innerText = "💾 Menyimpan...";
   barcode.focus();
-
-  setTimeout(() => (status.innerText = ""), 500);
-
-  const formData = new FormData();
-  formData.append("data", JSON.stringify(payload));
 
   fetch(API_URL, {
     method: "POST",
-    body: formData
+    body: JSON.stringify(payload)
   })
   .then(r => r.json())
-  .then(res => console.log("Response:", res))
-  .catch(err => console.error("Gagal simpan opname", err));
+  .then(res => {
+
+    if(res.status === "ok"){
+
+      status.innerText = "✅ Tersimpan";
+
+    }else{
+
+      status.innerText = "⚠️ Gagal simpan";
+
+    }
+
+    setTimeout(()=>status.innerText="",800);
+
+  })
+  .catch(err => {
+
+    console.error(err);
+    status.innerText = "❌ Error koneksi";
+
+  });
+
 }
 
 /* ============================= */
 /* GANTI PETUGAS                 */
 /* ============================= */
+
 function ganti() {
   localStorage.clear();
   location.href = "index.html";
 }
 
 /* ============================= */
-/* KAMERA (1D ONLY)              */
+/* KAMERA                        */
 /* ============================= */
+
 function bukaKamera() {
+
   const kameraDiv = document.getElementById("kamera");
   kameraDiv.style.display = "block";
 
@@ -184,10 +229,10 @@ function bukaKamera() {
   qrScanner = new Html5Qrcode("kamera");
 
   qrScanner.start(
-    { facingMode: "environment" },
+    { facingMode:"environment" },
     {
-      fps: 10,
-      formatsToSupport: [
+      fps:10,
+      formatsToSupport:[
         Html5QrcodeSupportedFormats.CODE_128,
         Html5QrcodeSupportedFormats.EAN_13,
         Html5QrcodeSupportedFormats.EAN_8,
@@ -195,40 +240,55 @@ function bukaKamera() {
         Html5QrcodeSupportedFormats.UPC_E
       ]
     },
-    (decodedText) => {
+    decodedText => {
+
       barcode.value = decodedText;
+
       qrScanner.stop();
       qrScanner = null;
       kameraDiv.style.display = "none";
-      cariProduk(); // beep dipanggil di sini
+
+      cariProduk();
+
     },
     () => {}
   );
+
 }
 
 /* ============================= */
-/* POPUP CUSTOM                  */
+/* POPUP                         */
 /* ============================= */
+
 function tampilkanPopup(teks) {
+
   document.getElementById("popup-text").innerText = teks;
   document.getElementById("popup").classList.remove("hidden");
+
 }
 
 function tutupPopup() {
+
   document.getElementById("popup").classList.add("hidden");
+
 }
 
 /* ============================= */
-/* SUARA                         */
+/* BEEP                          */
 /* ============================= */
+
 let lastBeep = 0;
 
-function bunyiBeep() {
+function bunyiBeep(){
+
   const now = Date.now();
-  if (now - lastBeep < 200) return;
+
+  if(now - lastBeep < 200) return;
+
   lastBeep = now;
 
-  try {
+  try{
+
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -238,9 +298,12 @@ function bunyiBeep() {
 
     osc.connect(gain);
     gain.connect(ctx.destination);
+
     gain.gain.value = 0.18;
 
     osc.start();
     osc.stop(ctx.currentTime + 0.12);
-  } catch (e) {}
+
+  }catch(e){}
+
 }
